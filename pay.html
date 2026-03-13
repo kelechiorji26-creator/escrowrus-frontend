@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Pay Securely — Escrow R Us</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F7F6F2;--ink:#111009;--surface:#FFFFFF;--border:#E5E2DA;
+  --muted:#918E86;--accent:#1B6B45;--accent2:#2D9B63;
+  --accent-light:#E8F5EE;--warn:#D63B3B;--gold:#E8962A;
+  --display:'Syne',sans-serif;--body:'DM Sans',sans-serif;
+}
+body{font-family:var(--body);background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+nav{display:flex;align-items:center;justify-content:center;padding:0 5%;height:60px;background:var(--surface);border-bottom:1px solid var(--border)}
+.logo{font-family:var(--display);font-size:1.1rem;font-weight:800;display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink)}
+.logo-mark{width:26px;height:26px;background:var(--accent);border-radius:6px;display:grid;place-items:center}
+.logo-mark svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+main{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem 5%}
+.pay-wrap{width:100%;max-width:460px}
+
+/* LOADING STATE */
+.loading-state{text-align:center;padding:3rem;background:var(--surface);border-radius:20px;border:1px solid var(--border)}
+.loading-spinner{font-size:2rem;animation:spin 1s linear infinite;display:inline-block;margin-bottom:1rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ERROR STATE */
+.error-state{display:none;text-align:center;background:var(--surface);border:1.5px solid rgba(214,59,59,.25);border-radius:20px;padding:3rem 2rem}
+.error-state h2{font-family:var(--display);font-size:1.4rem;font-weight:800;margin-bottom:.6rem;color:var(--warn)}
+.error-state p{color:var(--muted);font-size:.88rem;line-height:1.7}
+
+/* DEAL CARD */
+.deal-card{background:var(--surface);border:1.5px solid var(--border);border-radius:20px;overflow:hidden;margin-bottom:1.2rem;box-shadow:0 4px 30px rgba(0,0,0,.06)}
+.deal-top{background:var(--accent);padding:1.6rem;color:#fff}
+.deal-top-lock{font-size:1.8rem;margin-bottom:.5rem}
+.deal-top-tag{font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:.3rem}
+.deal-top-name{font-family:var(--display);font-size:1.4rem;font-weight:800;letter-spacing:-.03em}
+.deal-body{padding:1.6rem}
+.deal-amount{font-family:var(--display);font-size:2.8rem;font-weight:800;letter-spacing:-.06em;color:var(--accent);margin-bottom:.3rem}
+.deal-amount-sub{font-size:.78rem;color:var(--muted);margin-bottom:1.5rem}
+.meta-row{display:flex;justify-content:space-between;align-items:center;font-size:.82rem;padding:.55rem 0;border-bottom:1px solid var(--border)}
+.meta-row:last-child{border-bottom:none}
+.meta-key{color:var(--muted)}
+.meta-val{font-weight:600}
+.deal-timer{background:rgba(232,150,42,.08);border:1px solid rgba(232,150,42,.25);border-radius:10px;padding:.8rem 1rem;display:flex;align-items:center;gap:.7rem;font-size:.8rem;color:var(--gold);font-weight:500;margin-top:1rem}
+.deal-timer svg{width:16px;height:16px;stroke:var(--gold);fill:none;stroke-width:2;stroke-linecap:round;flex-shrink:0}
+
+/* PAYMENT FORM */
+.pay-form{background:var(--surface);border:1.5px solid var(--border);border-radius:20px;padding:1.8rem;box-shadow:0 4px 30px rgba(0,0,0,.06)}
+.pay-form-title{font-family:var(--display);font-size:1.1rem;font-weight:800;letter-spacing:-.03em;margin-bottom:.3rem}
+.pay-form-sub{font-size:.78rem;color:var(--muted);margin-bottom:1.5rem}
+.field{margin-bottom:1.1rem}
+.field label{display:block;font-size:.75rem;font-weight:600;margin-bottom:.45rem}
+.field input{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;font-family:var(--body);font-size:.9rem;color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s}
+.field input:focus{border-color:var(--accent2);box-shadow:0 0 0 3px rgba(45,155,99,.1)}
+.field input::placeholder{color:var(--muted)}
+.pay-btn{width:100%;padding:15px;border-radius:12px;background:var(--accent);color:#fff;font-family:var(--body);font-size:1rem;font-weight:700;border:none;cursor:pointer;transition:all .2s;box-shadow:0 4px 20px rgba(27,107,69,.25);display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:.5rem}
+.pay-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(27,107,69,.35)}
+.pay-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.pay-note{font-size:.72rem;color:var(--muted);text-align:center;margin-top:1rem;line-height:1.6}
+.pay-note b{color:var(--ink)}
+
+/* ERROR BANNER inside form */
+.form-error{display:none;background:rgba(214,59,59,.08);border:1px solid rgba(214,59,59,.25);border-radius:8px;padding:.8rem 1rem;margin-bottom:1rem;font-size:.82rem;color:var(--warn)}
+
+/* TRUST BADGES */
+.trust-row{display:flex;gap:.6rem;margin-top:1.2rem;flex-wrap:wrap}
+.trust-badge{flex:1;min-width:120px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.7rem .9rem;display:flex;align-items:center;gap:.5rem;font-size:.72rem;color:var(--muted)}
+.trust-badge svg{width:14px;height:14px;stroke:var(--accent2);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+
+/* SUCCESS SCREEN */
+.success-screen{display:none;text-align:center;background:var(--surface);border:1.5px solid var(--accent);border-radius:20px;padding:3rem 2rem;box-shadow:0 8px 40px rgba(27,107,69,.1)}
+.success-icon{font-size:4rem;margin-bottom:1.5rem;animation:pop .4s cubic-bezier(.17,.67,.35,1.5) both}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+.success-screen h2{font-family:var(--display);font-size:1.8rem;font-weight:800;letter-spacing:-.04em;margin-bottom:.6rem}
+.success-screen p{color:var(--muted);font-size:.88rem;line-height:1.7;max-width:300px;margin:0 auto 1.5rem}
+.success-ref{background:var(--accent-light);border-radius:10px;padding:.8rem 1.2rem;font-size:.78rem;color:var(--accent);font-weight:600}
+
+footer{padding:1.5rem;text-align:center;font-size:.72rem;color:var(--muted);border-top:1px solid var(--border)}
+footer a{color:var(--muted);text-decoration:none}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+    </div>
+    Escrow R Us
+  </a>
+</nav>
+
+<main>
+  <div class="pay-wrap">
+
+    <!-- LOADING STATE — shown while we fetch the deal from the server -->
+    <div class="loading-state" id="loadingState">
+      <div class="loading-spinner">⏳</div>
+      <p style="color:var(--muted);font-size:.9rem">Loading deal details...</p>
+    </div>
+
+    <!-- ERROR STATE — shown if deal not found or already paid -->
+    <div class="error-state" id="errorState">
+      <h2 id="errorTitle">Deal Not Found</h2>
+      <p id="errorMessage">This deal link is invalid or has expired.</p>
+    </div>
+
+    <!-- DEAL SUMMARY — shown after deal loads successfully -->
+    <div class="deal-card" id="dealCard" style="display:none">
+      <div class="deal-top">
+        <div class="deal-top-lock">🔒</div>
+        <div class="deal-top-tag">Escrow R Us — Secure Deal</div>
+        <div class="deal-top-name" id="dealItemName">Loading...</div>
+      </div>
+      <div class="deal-body">
+        <div class="deal-amount">₦<span id="dealAmount">0</span></div>
+        <div class="deal-amount-sub">Funds held in escrow until delivery confirmed</div>
+        <div class="meta-row">
+          <span class="meta-key">Vendor</span>
+          <span class="meta-val" id="dealVendor">—</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-key">Auto-release in</span>
+          <span class="meta-val" id="dealDeadline">—</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-key">Deal ID</span>
+          <span class="meta-val" id="dealId" style="font-family:monospace;color:var(--muted)">—</span>
+        </div>
+        <div class="deal-timer">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          Dispute window: You have 48hrs after delivery to raise any issues.
+        </div>
+      </div>
+    </div>
+
+    <!-- PAYMENT FORM -->
+    <div class="pay-form" id="payForm" style="display:none">
+      <div class="pay-form-title">Your Details</div>
+      <div class="pay-form-sub">We need this to send your payment confirmation and track your deal.</div>
+
+      <div class="form-error" id="formError"></div>
+
+      <div class="field">
+        <label>Full Name *</label>
+        <input type="text" id="buyerFullName" placeholder="Chioma Okafor"/>
+      </div>
+      <div class="field">
+        <label>Email Address *</label>
+        <input type="email" id="buyerEmail" placeholder="chioma@gmail.com"/>
+      </div>
+      <div class="field">
+        <label>WhatsApp Number *</label>
+        <input type="tel" id="buyerWhatsapp" placeholder="08012345678"/>
+      </div>
+      <button class="pay-btn" id="payBtn" onclick="initPayment()">
+        🔒 Pay ₦<span id="payBtnAmt">0</span> Securely
+      </button>
+      <p class="pay-note">
+        Your money is held by <b>Escrow R Us</b>, not the vendor, until you confirm delivery.
+        Powered by <b>Paystack</b> — 256-bit SSL encrypted.
+      </p>
+    </div>
+
+    <div class="trust-row" id="trustRow" style="display:none">
+      <div class="trust-badge">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Money held safely
+      </div>
+      <div class="trust-badge">
+        <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Dispute protection
+      </div>
+      <div class="trust-badge">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Auto-release timer
+      </div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="success-screen" id="successScreen">
+      <div class="success-icon">✅</div>
+      <h2>Payment Secured!</h2>
+      <p>Your ₦<span id="successAmt">0</span> is safely held in escrow. The vendor has been notified and will ship.</p>
+      <div class="success-ref">Deal ID: #<span id="successRef">—</span> · Check your WhatsApp for confirmation</div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  By paying you agree to our <a href="#">Terms of Service</a> and <a href="#">Dispute Policy</a> · © 2026 Escrow R Us Ltd
+</footer>
+
+<script>
+// ── CONFIGURATION ─────────────────────────────────────────────────────
+const API_URL = 'https://escrowrus-server-production.up.railway.app'
+
+// We store the loaded deal here so initPayment() can access it
+let currentDeal = null
+
+// ── STEP 1: READ THE DEAL CODE FROM THE URL ───────────────────────────
+// When a vendor shares a link like: pay.html?deal=XK92J
+// We read "XK92J" from the URL and use it to fetch the real deal.
+const params   = new URLSearchParams(window.location.search)
+const dealCode = params.get('deal')
+const verified = params.get('verified')  // set by Paystack after redirect
+const ref      = params.get('ref')       // Paystack reference after redirect
+
+// ── STEP 2: LOAD THE DEAL FROM YOUR SERVER ───────────────────────────
+// This replaces the old localStorage lookup.
+// The server checks if the deal exists and is still payable.
+async function loadDeal() {
+  if (!dealCode) {
+    showError('Invalid Link', 'No deal code found in this link. Please ask the vendor for a valid link.')
+    return
+  }
+
+  try {
+    // GET /api/deals/:code — public route, no auth needed
+    const response = await fetch(`${API_URL}/api/deals/${dealCode}`)
+    const data = await response.json()
+
+    if (!response.ok) {
+      // Server returned an error — deal not found, expired, or already paid
+      showError(
+        response.status === 404 ? 'Deal Not Found' :
+        response.status === 410 ? 'Deal Expired' :
+        response.status === 409 ? 'Already Paid' : 'Error',
+        data.error || 'Something went wrong.'
+      )
+      return
+    }
+
+    // ── SUCCESS: Deal loaded ──────────────────────────────────────
+    // Store the deal so initPayment() can use it
+    currentDeal = data.deal
+
+    // Populate the UI with real data from the database
+    document.getElementById('dealItemName').textContent = data.deal.item_name
+    document.getElementById('dealAmount').textContent   = parseFloat(data.deal.amount).toLocaleString()
+    document.getElementById('dealVendor').textContent   = data.deal.users?.full_name || '—'
+    document.getElementById('dealDeadline').textContent = data.deal.deadline_label + ' after payment'
+    document.getElementById('dealId').textContent       = '#' + data.deal.deal_code
+    document.getElementById('payBtnAmt').textContent    = parseFloat(data.deal.amount).toLocaleString()
+    document.getElementById('successAmt').textContent   = parseFloat(data.deal.amount).toLocaleString()
+    document.getElementById('successRef').textContent   = data.deal.deal_code
+
+    // Hide loading, show deal
+    document.getElementById('loadingState').style.display = 'none'
+    document.getElementById('dealCard').style.display     = 'block'
+    document.getElementById('payForm').style.display      = 'block'
+    document.getElementById('trustRow').style.display     = 'flex'
+
+    // If Paystack just redirected back after payment, verify and show success
+    if (verified === 'true' && ref) {
+      verifyPayment(ref)
+    }
+
+  } catch (err) {
+    // Network error — server is down
+    showError('Connection Error', 'Could not connect to the server. Please try again.')
+  }
+}
+
+// ── SHOW ERROR STATE ──────────────────────────────────────────────────
+function showError(title, message) {
+  document.getElementById('loadingState').style.display = 'none'
+  document.getElementById('errorState').style.display   = 'block'
+  document.getElementById('errorTitle').textContent     = title
+  document.getElementById('errorMessage').textContent   = message
+}
+
+// ── STEP 3: INITIALISE PAYMENT ────────────────────────────────────────
+// When the buyer clicks "Pay Securely", we call YOUR server.
+// Your server calls Paystack and gets a payment URL.
+// We then redirect the buyer to Paystack's hosted payment page.
+// The buyer NEVER enters card details on your page — only on Paystack's.
+// This means you are NOT responsible for PCI compliance.
+async function initPayment() {
+  const name  = document.getElementById('buyerFullName').value.trim()
+  const email = document.getElementById('buyerEmail').value.trim()
+  const phone = document.getElementById('buyerWhatsapp').value.trim()
+
+  // Client-side validation (server validates too)
+  if (!name || !email || !phone) {
+    const err = document.getElementById('formError')
+    err.textContent = '⚠️  Please fill in all fields'
+    err.style.display = 'block'
+    return
+  }
+
+  document.getElementById('formError').style.display = 'none'
+
+  const btn = document.getElementById('payBtn')
+  btn.disabled = true
+  btn.innerHTML = '⏳ Initialising payment...'
+
+  try {
+    // ── CALL YOUR SERVER to initialise payment ─────────────────────
+    // Your server uses your Paystack SECRET key to call Paystack's API.
+    // The secret key NEVER touches this browser page.
+    const response = await fetch(`${API_URL}/api/payments/initialize`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        deal_code:    dealCode,
+        buyer_name:   name,
+        buyer_email:  email,
+        buyer_phone:  phone
+      })
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      const err = document.getElementById('formError')
+      err.textContent = '⚠️  ' + (data.error || 'Payment initialisation failed.')
+      err.style.display = 'block'
+      btn.disabled = false
+      btn.innerHTML = `🔒 Pay ₦${parseFloat(currentDeal.amount).toLocaleString()} Securely`
+      return
+    }
+
+    // ── REDIRECT TO PAYSTACK ──────────────────────────────────────
+    // authorization_url is Paystack's hosted checkout page.
+    // We redirect the buyer there — they enter their card on Paystack's site.
+    // After payment, Paystack redirects them back to our callback_url.
+    // The callback_url is set in routes/payments.js as:
+    //   pay.html?verified=true&ref={reference}
+    window.location.href = data.authorization_url
+
+  } catch (err) {
+    const formErr = document.getElementById('formError')
+    formErr.textContent = '⚠️  Could not connect to the server. Please try again.'
+    formErr.style.display = 'block'
+    btn.disabled = false
+    btn.innerHTML = `🔒 Pay ₦${parseFloat(currentDeal?.amount || 0).toLocaleString()} Securely`
+  }
+}
+
+// ── STEP 4: VERIFY PAYMENT AFTER REDIRECT ────────────────────────────
+// After Paystack redirects the buyer back, we verify the payment with your server.
+// Your server checks directly with Paystack's API using the secret key.
+async function verifyPayment(reference) {
+  try {
+    const response = await fetch(`${API_URL}/api/payments/verify/${reference}`)
+    const data = await response.json()
+
+    if (data.verified) {
+      // Payment is confirmed — show success screen
+      document.getElementById('dealCard').style.display  = 'none'
+      document.getElementById('payForm').style.display   = 'none'
+      document.getElementById('trustRow').style.display  = 'none'
+      document.getElementById('successScreen').style.display = 'block'
+    }
+  } catch (err) {
+    // Verification failed — the webhook should handle this anyway
+    console.log('Verification check failed, webhook will process it')
+  }
+}
+
+// ── START: Load the deal when the page opens ──────────────────────────
+loadDeal()
+</script>
+</body>
+</html>

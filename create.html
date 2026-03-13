@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Create a Deal — Escrow R Us</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F7F6F2;--ink:#111009;--surface:#FFFFFF;--border:#E5E2DA;
+  --muted:#918E86;--accent:#1B6B45;--accent2:#2D9B63;
+  --accent-light:#E8F5EE;--warn:#D63B3B;--gold:#E8962A;
+  --display:'Syne',sans-serif;--body:'DM Sans',sans-serif;
+}
+body{font-family:var(--body);background:var(--bg);color:var(--ink);min-height:100vh}
+nav{display:flex;align-items:center;justify-content:space-between;padding:0 5%;height:64px;background:var(--surface);border-bottom:1px solid var(--border)}
+.logo{font-family:var(--display);font-size:1.1rem;font-weight:800;letter-spacing:-.02em;display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink)}
+.logo-mark{width:28px;height:28px;background:var(--accent);border-radius:6px;display:grid;place-items:center}
+.logo-mark svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.back{font-size:.85rem;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:.4rem;transition:color .2s}
+.back:hover{color:var(--ink)}
+.back svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+main{max-width:1100px;margin:0 auto;padding:3rem 5%;display:grid;grid-template-columns:1fr 380px;gap:3rem;align-items:start}
+.form-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:2.5rem}
+.form-title{font-family:var(--display);font-size:1.6rem;font-weight:800;letter-spacing:-.04em;margin-bottom:.4rem}
+.form-sub{font-size:.88rem;color:var(--muted);margin-bottom:2rem}
+.field{margin-bottom:1.4rem}
+.field label{display:block;font-size:.78rem;font-weight:600;color:var(--ink);margin-bottom:.5rem;letter-spacing:.01em}
+.field input,.field textarea,.field select{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;font-family:var(--body);font-size:.9rem;color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s;resize:vertical}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent2);box-shadow:0 0 0 3px rgba(45,155,99,.1)}
+.field input::placeholder,.field textarea::placeholder{color:var(--muted)}
+.field-hint{font-size:.72rem;color:var(--muted);margin-top:.4rem}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.amount-wrap{position:relative}
+.amount-prefix{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-weight:700;color:var(--muted);font-size:.9rem;pointer-events:none}
+.amount-wrap input{padding-left:40px}
+.deadline-group{display:flex;gap:.6rem}
+.deadline-group input[type=number]{width:90px;flex-shrink:0}
+.deadline-group select{flex:1}
+.section-divider{border:none;border-top:1px solid var(--border);margin:1.8rem 0}
+.section-label{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:1.2rem}
+.btn-submit{width:100%;padding:15px;border-radius:12px;background:var(--accent);color:#fff;font-family:var(--body);font-size:1rem;font-weight:700;border:none;cursor:pointer;transition:all .2s;box-shadow:0 4px 20px rgba(27,107,69,.25);margin-top:.5rem}
+.btn-submit:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(27,107,69,.35)}
+.btn-submit:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* ERROR BANNER */
+.error-banner{display:none;background:rgba(214,59,59,.08);border:1px solid rgba(214,59,59,.25);border-radius:10px;padding:.9rem 1rem;margin-bottom:1.2rem;font-size:.84rem;color:var(--warn)}
+
+/* LOGIN PROMPT */
+.login-prompt{background:var(--accent-light);border:1.5px solid rgba(27,107,69,.2);border-radius:14px;padding:1.5rem;text-align:center;margin-bottom:1.5rem}
+.login-prompt p{font-size:.88rem;color:var(--accent);margin-bottom:1rem;font-weight:500}
+.login-prompt a{display:inline-block;padding:9px 22px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none;font-size:.85rem;font-weight:700}
+
+/* PREVIEW */
+.preview-sticky{position:sticky;top:2rem}
+.preview-label{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem}
+.preview-card{background:var(--surface);border:1.5px solid var(--accent);border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(27,107,69,.1)}
+.preview-header{background:var(--accent);padding:1.4rem 1.6rem;color:#fff}
+.preview-lock{font-size:1.5rem;margin-bottom:.5rem}
+.preview-brand{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:.3rem}
+.preview-item-name{font-family:var(--display);font-size:1.2rem;font-weight:700;line-height:1.2}
+.preview-body{padding:1.6rem}
+.preview-amount{font-family:var(--display);font-size:2.4rem;font-weight:800;letter-spacing:-.05em;color:var(--accent);margin-bottom:1rem}
+.preview-amount span{font-size:1rem;font-weight:400;color:var(--muted);margin-left:4px}
+.preview-row{display:flex;justify-content:space-between;align-items:center;padding:.65rem 0;border-bottom:1px solid var(--border);font-size:.82rem}
+.preview-row:last-of-type{border-bottom:none}
+.preview-key{color:var(--muted)}
+.preview-val{font-weight:600;text-align:right}
+.preview-fee-note{background:var(--accent-light);border-radius:10px;padding:.8rem 1rem;font-size:.75rem;color:var(--accent);margin-top:1rem;line-height:1.6}
+.preview-url{background:var(--bg);border:1px dashed var(--border);border-radius:10px;padding:.9rem 1rem;margin-top:1rem;font-size:.75rem;color:var(--muted);word-break:break-all}
+.preview-url b{color:var(--accent2);display:block;margin-bottom:.2rem;font-size:.65rem;letter-spacing:.06em;text-transform:uppercase}
+
+/* SUCCESS */
+.success-screen{display:none;text-align:center;padding:3rem 2rem}
+.success-icon{font-size:4rem;margin-bottom:1.5rem;animation:pop .4s cubic-bezier(.17,.67,.35,1.5) both}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+.success-screen h2{font-family:var(--display);font-size:1.8rem;font-weight:800;letter-spacing:-.04em;margin-bottom:.6rem}
+.success-screen p{color:var(--muted);font-size:.88rem;line-height:1.7;max-width:320px;margin:0 auto 2rem}
+.link-box{background:var(--accent-light);border:1.5px solid rgba(27,107,69,.25);border-radius:12px;padding:1rem 1.2rem;margin-bottom:1rem}
+.link-box .link-url{font-size:.88rem;font-weight:700;color:var(--accent);word-break:break-all;margin-bottom:.7rem}
+.copy-btn{width:100%;padding:10px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:var(--body);font-weight:700;font-size:.85rem;cursor:pointer;transition:opacity .2s}
+.copy-btn:hover{opacity:.85}
+.share-btns{display:flex;gap:.6rem;margin-top:1rem;flex-wrap:wrap;justify-content:center}
+.share-btn{flex:1;min-width:120px;padding:10px;border-radius:8px;font-family:var(--body);font-size:.8rem;font-weight:600;border:1.5px solid var(--border);background:var(--surface);color:var(--ink);cursor:pointer;transition:all .2s}
+.share-btn:hover{border-color:var(--accent2);color:var(--accent)}
+
+@media(max-width:768px){
+  main{grid-template-columns:1fr}
+  .field-row{grid-template-columns:1fr}
+  .preview-sticky{position:static}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+    </div>
+    Escrow R Us
+  </a>
+  <a href="index.html" class="back">
+    <svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Back to home
+  </a>
+</nav>
+
+<main>
+  <!-- FORM -->
+  <div class="form-card">
+
+    <!-- LOGIN PROMPT (shown if not logged in) -->
+    <div class="login-prompt" id="loginPrompt" style="display:none">
+      <p>You need to log in before creating a deal. Your deal will be saved to your account.</p>
+      <a href="login.html">Log in to continue →</a>
+    </div>
+
+    <div id="formView">
+      <h1 class="form-title">Create Escrow Link</h1>
+      <p class="form-sub">Fill in the deal details. Your buyer pays through the generated link and funds are held until delivery is confirmed.</p>
+
+      <!-- Error banner — shown if API call fails -->
+      <div class="error-banner" id="errorBanner"></div>
+
+      <div class="section-label">Deal Details</div>
+      <div class="field">
+        <label>Item / Service Name *</label>
+        <input type="text" id="itemName" placeholder="e.g. Red Ankara Midi Dress" oninput="updatePreview()"/>
+      </div>
+      <div class="field">
+        <label>Description (optional)</label>
+        <textarea id="itemDesc" placeholder="Size, colour, condition, any relevant details..." rows="3"></textarea>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Transaction Amount (₦) *</label>
+          <div class="amount-wrap">
+            <span class="amount-prefix">₦</span>
+            <input type="number" id="amount" placeholder="35000" min="500" oninput="updatePreview()"/>
+          </div>
+        </div>
+        <div class="field">
+          <label>Delivery / Completion Window *</label>
+          <div class="deadline-group">
+            <input type="number" id="deadlineNum" value="3" min="1" max="30" oninput="updatePreview()"/>
+            <select id="deadlineUnit" onchange="updatePreview()">
+              <option value="hours">Hours</option>
+              <option value="days" selected>Days</option>
+              <option value="weeks">Weeks</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <hr class="section-divider"/>
+      <div class="section-label">Buyer Details (optional)</div>
+      <div class="field-row">
+        <div class="field">
+          <label>Buyer Name</label>
+          <input type="text" id="buyerName" placeholder="Chioma Okafor" oninput="updatePreview()"/>
+        </div>
+        <div class="field">
+          <label>Buyer WhatsApp / Phone</label>
+          <input type="tel" id="buyerPhone" placeholder="08087654321"/>
+        </div>
+      </div>
+
+      <button class="btn-submit" id="submitBtn" onclick="createDeal()">Generate Escrow Link →</button>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="success-screen" id="successView">
+      <div class="success-icon">🔒</div>
+      <h2>Deal Link Created!</h2>
+      <p>Share this link with your buyer. Once they pay, you'll get a WhatsApp notification.</p>
+      <div class="link-box">
+        <div class="link-url" id="generatedUrl"></div>
+        <button class="copy-btn" onclick="copyLink()">📋 Copy Link</button>
+      </div>
+      <div class="share-btns">
+        <button class="share-btn" onclick="shareWhatsApp()">📱 WhatsApp</button>
+        <button class="share-btn" onclick="shareIG()">📸 Instagram</button>
+        <button class="share-btn" onclick="shareX()">𝕏 Share on X</button>
+      </div>
+      <br/>
+      <a href="dashboard.html" style="font-size:.85rem;color:var(--accent2);text-decoration:none;font-weight:600">View in Dashboard →</a>
+    </div>
+  </div>
+
+  <!-- PREVIEW -->
+  <div class="preview-sticky">
+    <div class="preview-label">Live Preview</div>
+    <div class="preview-card">
+      <div class="preview-header">
+        <div class="preview-lock">🔒</div>
+        <div class="preview-brand">Escrow R Us — Secure Deal</div>
+        <div class="preview-item-name" id="prev-item">Item name will appear here</div>
+      </div>
+      <div class="preview-body">
+        <div class="preview-amount">₦<span id="prev-amount">0</span> <span>NGN</span></div>
+        <div class="preview-row">
+          <span class="preview-key">Buyer</span>
+          <span class="preview-val" id="prev-buyer">Anyone with link</span>
+        </div>
+        <div class="preview-row">
+          <span class="preview-key">Auto-release</span>
+          <span class="preview-val" id="prev-deadline">3 days after payment</span>
+        </div>
+        <div class="preview-row">
+          <span class="preview-key">Platform fee (1.8%)</span>
+          <span class="preview-val" id="prev-fee">₦0</span>
+        </div>
+        <div class="preview-row">
+          <span class="preview-key">You receive</span>
+          <span class="preview-val" id="prev-net" style="color:var(--accent);font-weight:700">₦0</span>
+        </div>
+        <div class="preview-fee-note">
+          🛡️ Funds are held securely and only released after delivery confirmation or auto-release timer.
+        </div>
+        <div class="preview-url">
+          <b>Link will look like</b>
+          escrowrus.com/pay.html?deal=XXXXXX
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+// ── CONFIGURATION ─────────────────────────────────────────────────────
+// This is the only place the API URL appears.
+// When you deploy, change this to your real Railway URL.
+const API_URL = 'https://escrowrus-server-production.up.railway.app'
+
+// ── ON PAGE LOAD: check if vendor is logged in ───────────────────────
+// We check localStorage for the JWT token saved at login.
+// If no token → show the login prompt, hide the form.
+// If token exists → show the form normally.
+window.addEventListener('DOMContentLoaded', () => {
+  const token = localStorage.getItem('eru_token')
+  if (!token) {
+    document.getElementById('loginPrompt').style.display = 'block'
+    document.getElementById('formView').style.display = 'none'
+  }
+  updatePreview()
+})
+
+// ── LIVE PREVIEW: updates as vendor types ────────────────────────────
+// This is purely visual — runs in the browser, no API call.
+// The actual deal is only created when the button is clicked.
+function updatePreview() {
+  const item   = document.getElementById('itemName').value || 'Item name will appear here'
+  const amt    = parseFloat(document.getElementById('amount').value) || 0
+  const num    = document.getElementById('deadlineNum').value || '3'
+  const unit   = document.getElementById('deadlineUnit').value || 'days'
+  const buyer  = document.getElementById('buyerName').value || 'Anyone with link'
+  const fee    = amt * 0.018
+  const net    = amt - fee
+
+  document.getElementById('prev-item').textContent    = item
+  document.getElementById('prev-amount').textContent  = amt ? amt.toLocaleString() : '0'
+  document.getElementById('prev-buyer').textContent   = buyer
+  document.getElementById('prev-deadline').textContent = `${num} ${unit} after payment`
+  document.getElementById('prev-fee').textContent     = amt ? '₦' + fee.toLocaleString('en-NG', {maximumFractionDigits:0}) : '₦0'
+  document.getElementById('prev-net').textContent     = amt ? '₦' + net.toLocaleString('en-NG', {maximumFractionDigits:0}) : '₦0'
+}
+
+// ── SHOW ERROR ────────────────────────────────────────────────────────
+function showError(msg) {
+  const banner = document.getElementById('errorBanner')
+  banner.textContent = '⚠️  ' + msg
+  banner.style.display = 'block'
+  // Scroll to top of form so vendor sees the error
+  banner.scrollIntoView({ behavior: 'smooth', block: 'center' })
+}
+
+function hideError() {
+  document.getElementById('errorBanner').style.display = 'none'
+}
+
+// ── CREATE DEAL: the main function ────────────────────────────────────
+// This replaces the old fake createDeal() that used localStorage.
+// Now it calls YOUR real server at POST /api/deals.
+async function createDeal() {
+  hideError()
+
+  // Read all the form values
+  const item_name        = document.getElementById('itemName').value.trim()
+  const item_description = document.getElementById('itemDesc').value.trim()
+  const amount           = document.getElementById('amount').value
+  const deadline_num     = document.getElementById('deadlineNum').value
+  const deadline_unit    = document.getElementById('deadlineUnit').value
+  const buyer_email      = document.getElementById('buyerPhone').value.trim()
+
+  // Basic client-side check (server also validates — this is just for UX)
+  if (!item_name || !amount) {
+    showError('Item name and amount are required.')
+    return
+  }
+
+  // Get the JWT token stored at login
+  const token = localStorage.getItem('eru_token')
+  if (!token) {
+    showError('You are not logged in. Please log in first.')
+    return
+  }
+
+  // Disable the button and show loading state
+  const btn = document.getElementById('submitBtn')
+  btn.disabled = true
+  btn.textContent = '⏳ Creating deal...'
+
+  try {
+    // ── THE REAL API CALL ──────────────────────────────────────────
+    // This sends a POST request to YOUR server.
+    // The server validates everything, generates the deal code,
+    // saves to the database, and returns the deal details.
+    // Nothing is saved in localStorage — it's all in the real database.
+    const response = await fetch(`${API_URL}/api/deals`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // The Authorization header sends the JWT token.
+        // The server reads this in middleware/auth.js to know who you are.
+        // This is what proves you are a logged-in vendor — not a form field.
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        item_name,
+        item_description,
+        amount: parseFloat(amount),
+        deadline_num,
+        deadline_unit,
+        buyer_email
+      })
+    })
+
+    // Parse the JSON response from the server
+    const data = await response.json()
+
+    // If the server returned an error (4xx or 5xx status)
+    if (!response.ok) {
+      // response.ok is true for 200-299, false for everything else
+      showError(data.error || 'Failed to create deal. Please try again.')
+      btn.disabled = false
+      btn.textContent = 'Generate Escrow Link →'
+      return
+    }
+
+    // ── SUCCESS ───────────────────────────────────────────────────
+    // The server created the deal and returned the payment link.
+    // Show the success screen with the real link.
+    const paymentLink = data.deal.payment_link
+
+    document.getElementById('generatedUrl').textContent = paymentLink
+    document.getElementById('formView').style.display = 'none'
+    document.getElementById('successView').style.display = 'block'
+
+    // Store just the deal code in localStorage — only for sharing convenience.
+    // We are NOT storing the full deal data in localStorage anymore.
+    // The real data lives in your Supabase database.
+    localStorage.setItem('eru_last_deal', JSON.stringify({
+      code: data.deal.deal_code,
+      item: data.deal.item_name,
+      amount: data.deal.amount,
+      link: paymentLink
+    }))
+
+  } catch (err) {
+    // Network error — server is down or no internet
+    showError('Could not connect to the server. Is your server running?')
+    btn.disabled = false
+    btn.textContent = 'Generate Escrow Link →'
+  }
+}
+
+// ── SHARE FUNCTIONS ───────────────────────────────────────────────────
+function getGeneratedUrl() {
+  return document.getElementById('generatedUrl').textContent
+}
+
+function copyLink() {
+  navigator.clipboard.writeText(getGeneratedUrl()).then(() => {
+    const btn = document.querySelector('.copy-btn')
+    btn.textContent = '✅ Copied!'
+    setTimeout(() => btn.textContent = '📋 Copy Link', 2000)
+  })
+}
+
+function shareWhatsApp() {
+  const item = document.getElementById('prev-item').textContent
+  const amt  = document.getElementById('prev-amount').textContent
+  const msg  =
+    `Hi! I've created a secure escrow deal link for you.\n\n` +
+    `🔒 ${item}\n` +
+    `💰 ₦${amt}\n\n` +
+    `Click to pay safely: ${getGeneratedUrl()}\n\n` +
+    `_Your money is held in escrow until you confirm delivery — Escrow R Us_`
+  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`)
+}
+
+function shareIG() {
+  copyLink()
+  alert('Link copied! Paste it in your Instagram DM or bio.')
+}
+
+function shareX() {
+  const item = document.getElementById('prev-item').textContent
+  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+    `Just listed: ${item} — pay securely via @EscrowRUs 🔒 ${getGeneratedUrl()}`
+  )}`)
+}
+</script>
+</body>
+</html>

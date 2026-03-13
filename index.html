@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Escrow R Us — Secure Every Deal</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F7F6F2;--ink:#111009;--surface:#FFFFFF;--border:#E5E2DA;
+  --muted:#918E86;--accent:#1B6B45;--accent2:#2D9B63;
+  --accent-light:#E8F5EE;--warn:#D63B3B;--gold:#E8962A;
+  --display:'Syne',sans-serif;--body:'DM Sans',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--body);background:var(--bg);color:var(--ink);overflow-x:hidden}
+
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 6%;height:66px;
+  background:rgba(247,246,242,0.9);backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);
+}
+.logo{font-family:var(--display);font-size:1.15rem;font-weight:800;letter-spacing:-.02em;display:flex;align-items:center;gap:9px}
+.logo-mark{width:30px;height:30px;background:var(--accent);border-radius:7px;display:grid;place-items:center}
+.logo-mark svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.nav-r{display:flex;align-items:center;gap:1.8rem}
+.nav-r a{text-decoration:none;color:var(--muted);font-size:.88rem;font-weight:500;transition:color .2s}
+.nav-r a:hover{color:var(--ink)}
+.btn{display:inline-block;padding:10px 24px;border-radius:8px;font-family:var(--body);font-weight:600;font-size:.9rem;text-decoration:none;cursor:pointer;transition:all .2s;border:none}
+.btn-dark{background:var(--ink);color:#fff;box-shadow:0 2px 12px rgba(0,0,0,.15)}
+.btn-dark:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,0,0,.2)}
+.btn-green{background:var(--accent);color:#fff;box-shadow:0 2px 16px rgba(27,107,69,.25)}
+.btn-green:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(27,107,69,.35)}
+.btn-outline{background:transparent;color:var(--ink);border:2px solid var(--border)}
+.btn-outline:hover{border-color:var(--ink)}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:110px 6% 60px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 100% 70% at 50% -10%,rgba(27,107,69,.07),transparent 60%),radial-gradient(circle at 10% 90%,rgba(232,150,42,.06),transparent 40%);pointer-events:none}
+/* Decorative blobs */
+.blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.5;pointer-events:none}
+.blob-1{width:400px;height:400px;background:rgba(45,155,99,.08);top:-100px;right:-100px}
+.blob-2{width:300px;height:300px;background:rgba(232,150,42,.07);bottom:0;left:-80px}
+
+.hero-pill{display:inline-flex;align-items:center;gap:7px;background:var(--accent-light);color:var(--accent);border:1px solid rgba(27,107,69,.2);border-radius:100px;padding:5px 15px 5px 8px;font-size:.75rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin-bottom:2rem;animation:up .5s ease both}
+.pill-dot{width:20px;height:20px;background:var(--accent);border-radius:50%;display:grid;place-items:center}
+.pill-dot::after{content:'';width:6px;height:6px;background:#fff;border-radius:50%;animation:blink 1.8s infinite}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
+
+.hero h1{font-family:var(--display);font-size:clamp(2.6rem,6.5vw,5.2rem);font-weight:800;letter-spacing:-.05em;line-height:.95;max-width:780px;margin:0 auto 1.8rem;animation:up .5s .08s ease both}
+.hero h1 .green{color:var(--accent2)}
+.hero h1 .crossed{position:relative;display:inline-block}
+.hero h1 .crossed::after{content:'';position:absolute;left:-2px;right:-2px;top:52%;height:4px;background:var(--warn);border-radius:3px;transform:rotate(-2deg)}
+
+.hero-sub{font-size:1.05rem;color:var(--muted);max-width:480px;margin:0 auto 2.5rem;line-height:1.75;animation:up .5s .16s ease both}
+.hero-btns{display:flex;gap:.9rem;justify-content:center;flex-wrap:wrap;animation:up .5s .24s ease both}
+.hero-proof{margin-top:2.5rem;font-size:.78rem;color:var(--muted);animation:up .5s .32s ease both}
+.hero-proof b{color:var(--ink)}
+.avatars{display:inline-flex;margin-right:8px}
+.avatars span{width:24px;height:24px;border-radius:50%;border:2px solid var(--bg);background:var(--border);margin-left:-6px;font-size:.6rem;display:grid;place-items:center}
+.avatars span:first-child{margin-left:0}
+
+@keyframes up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+/* TRUST BAR */
+.trust-bar{background:var(--ink);padding:1.1rem 6%;display:flex;align-items:center;justify-content:center;gap:3rem;flex-wrap:wrap}
+.trust-item{display:flex;align-items:center;gap:.6rem;color:rgba(255,255,255,.7);font-size:.8rem;font-weight:500}
+.trust-item svg{width:16px;height:16px;stroke:var(--accent2);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+
+/* HOW IT WORKS */
+.section{padding:5.5rem 6%}
+.section-head{text-align:center;margin-bottom:3.5rem}
+.tag{display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent2);margin-bottom:.8rem}
+.section-head h2{font-family:var(--display);font-size:clamp(1.9rem,4vw,3rem);font-weight:800;letter-spacing:-.04em;line-height:1.05}
+.section-head p{color:var(--muted);margin-top:.8rem;font-size:.95rem;max-width:480px;margin-left:auto;margin-right:auto;line-height:1.7}
+
+.steps-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;max-width:1000px;margin:0 auto;counter-reset:step}
+.step-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.8rem 1.4rem;position:relative;transition:transform .2s,box-shadow .2s;counter-increment:step}
+.step-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,.07)}
+.step-card::before{content:counter(step,'0'counter(step));font-family:var(--display);font-size:3rem;font-weight:800;color:var(--border);position:absolute;top:1rem;right:1.2rem;line-height:1}
+.step-icon{font-size:2rem;margin-bottom:1rem}
+.step-card h3{font-family:var(--display);font-size:1rem;font-weight:700;margin-bottom:.5rem}
+.step-card p{font-size:.82rem;color:var(--muted);line-height:1.65}
+
+/* SOCIAL PROOF - CHAT */
+.split-section{padding:5.5rem 6%;background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.split-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;max-width:1080px;margin:0 auto}
+.split-text .tag{display:block;margin-bottom:.8rem}
+.split-text h2{font-family:var(--display);font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:800;letter-spacing:-.04em;line-height:1.1;margin-bottom:1.2rem}
+.split-text p{color:var(--muted);line-height:1.8;font-size:.93rem;margin-bottom:1rem}
+.check-list{list-style:none;margin-top:1.5rem}
+.check-list li{display:flex;gap:.7rem;align-items:flex-start;font-size:.88rem;margin-bottom:.8rem;color:var(--muted)}
+.check-list li strong{color:var(--ink)}
+.check-list li::before{content:'✓';width:20px;height:20px;background:var(--accent-light);color:var(--accent);border-radius:50%;display:grid;place-items:center;font-size:.7rem;font-weight:800;flex-shrink:0;margin-top:1px}
+
+/* CHAT MOCKUP */
+.chat-wrap{background:var(--bg);border:1px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:0 16px 50px rgba(0,0,0,.07)}
+.chat-top{background:var(--surface);padding:1rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.7rem}
+.chat-avi{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#f093fb,#f5576c);display:grid;place-items:center;font-size:.9rem;flex-shrink:0}
+.chat-name{font-weight:700;font-size:.85rem}
+.chat-online{font-size:.72rem;color:var(--accent2)}
+.chat-body{padding:1.2rem;display:flex;flex-direction:column;gap:.9rem}
+.msg{display:flex;gap:.6rem;align-items:flex-end}
+.msg.out{flex-direction:row-reverse}
+.msg-avi{width:28px;height:28px;border-radius:50%;background:var(--border);flex-shrink:0;display:grid;place-items:center;font-size:.7rem}
+.bubble{background:var(--surface);border:1px solid var(--border);border-radius:14px;border-bottom-left-radius:3px;padding:.65rem 1rem;font-size:.8rem;line-height:1.55;max-width:240px;color:var(--ink)}
+.msg.out .bubble{background:var(--accent);color:#fff;border:none;border-radius:14px;border-bottom-right-radius:3px}
+.escrow-card{background:var(--surface);border:1.5px solid var(--accent);border-radius:13px;padding:1rem 1.2rem;margin:.3rem 0}
+.ec-label{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent2);margin-bottom:.3rem}
+.ec-title{font-weight:700;font-size:.9rem;margin-bottom:.15rem}
+.ec-amount{font-family:var(--display);font-size:1.3rem;font-weight:800;color:var(--accent);margin-bottom:.6rem}
+.ec-btn{display:block;background:var(--accent);color:#fff;text-align:center;padding:9px;border-radius:8px;font-size:.78rem;font-weight:700;text-decoration:none}
+
+/* STATS */
+.stats-section{padding:5rem 6%;background:var(--ink);color:#fff}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.06);border-radius:16px;overflow:hidden;max-width:1000px;margin:0 auto}
+.stat-box{padding:2rem 1.5rem;background:var(--ink);transition:background .2s}
+.stat-box:hover{background:#1a1908}
+.stat-num{font-family:var(--display);font-size:2.5rem;font-weight:800;letter-spacing:-.04em;margin-bottom:.3rem}
+.stat-num.g{color:var(--accent2)}
+.stat-label{font-size:.78rem;color:rgba(255,255,255,.45);font-weight:400;line-height:1.5}
+
+/* PRICING */
+.pricing-section{padding:5.5rem 6%}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;max-width:900px;margin:0 auto}
+.p-card{border:1.5px solid var(--border);border-radius:16px;padding:2rem 1.6rem;transition:border-color .2s,transform .2s;background:var(--surface)}
+.p-card:hover{border-color:var(--accent2);transform:translateY(-3px)}
+.p-card.hot{border-color:var(--accent);background:var(--accent);color:#fff;position:relative}
+.p-hot-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--gold);color:#fff;font-size:.65rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:4px 14px;border-radius:100px}
+.p-tier{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.7rem}
+.p-card.hot .p-tier{color:rgba(255,255,255,.55)}
+.p-fee{font-family:var(--display);font-size:2.8rem;font-weight:800;letter-spacing:-.05em;line-height:1}
+.p-note{font-size:.78rem;color:var(--muted);margin-bottom:1.5rem;margin-top:.3rem}
+.p-card.hot .p-note{color:rgba(255,255,255,.55)}
+.p-features{list-style:none;margin-bottom:1.8rem;display:flex;flex-direction:column;gap:.6rem}
+.p-features li{font-size:.83rem;color:var(--muted);display:flex;align-items:center;gap:.6rem;padding-bottom:.6rem;border-bottom:1px solid var(--border)}
+.p-card.hot .p-features li{color:rgba(255,255,255,.75);border-color:rgba(255,255,255,.12)}
+.p-features li::before{content:'';width:16px;height:16px;border-radius:50%;background:var(--accent-light);flex-shrink:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2 6l3 3 5-5' stroke='%231B6B45' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:center;background-size:12px}
+.p-card.hot .p-features li::before{background-color:rgba(255,255,255,.15);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2 6l3 3 5-5' stroke='white' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.p-btn{display:block;text-align:center;padding:12px;border-radius:9px;font-weight:700;font-size:.88rem;text-decoration:none;transition:opacity .2s;border:none;cursor:pointer;font-family:var(--body)}
+.p-btn-light{background:var(--accent-light);color:var(--accent)}
+.p-btn-white{background:#fff;color:var(--accent)}
+.p-btn:hover{opacity:.8}
+
+/* CTA */
+.cta-section{padding:6rem 6%;background:var(--accent);color:#fff;text-align:center;position:relative;overflow:hidden}
+.cta-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% -20%,rgba(255,255,255,.1),transparent 60%);pointer-events:none}
+.cta-section h2{font-family:var(--display);font-size:clamp(2rem,5vw,3.8rem);font-weight:800;letter-spacing:-.04em;margin-bottom:1rem;position:relative}
+.cta-section p{color:rgba(255,255,255,.65);max-width:440px;margin:0 auto 2.5rem;font-size:.97rem;line-height:1.75;position:relative}
+.btn-white{background:#fff;color:var(--accent);font-weight:700;padding:15px 36px;font-size:1rem;border-radius:10px;box-shadow:0 4px 24px rgba(0,0,0,.2);position:relative}
+.btn-white:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,.25)}
+
+footer{padding:2rem 6%;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;font-size:.78rem;color:var(--muted)}
+.f-logo{font-family:var(--display);font-weight:800;color:var(--ink);font-size:1rem}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--ink)}
+
+@media(max-width:768px){
+  .nav-r a:not(.btn){display:none}
+  .steps-row{grid-template-columns:1fr 1fr}
+  .split-grid,.stats-grid,.pricing-grid{grid-template-columns:1fr}
+  footer{flex-direction:column;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+    </div>
+    Escrow R Us
+  </div>
+  <div class="nav-r">
+    <a href="#how">How it works</a>
+    <a href="#pricing">Pricing</a>
+    <a href="create.html" class="btn btn-dark">Create a Deal →</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="hero-pill">
+    <span class="pill-dot"></span> Live &amp; secured in Nigeria
+  </div>
+  <h1>Stop the<br/><span class="crossed">scams.</span><br/>Sell with <span class="green">confidence.</span></h1>
+  <p class="hero-sub">The secure escrow layer for Nigerian social commerce. Send a link, hold the money, release on delivery. Works on WhatsApp, Instagram &amp; X.</p>
+  <div class="hero-btns">
+    <a href="create.html" class="btn btn-green">Create Escrow Link — Free</a>
+    <a href="#how" class="btn btn-outline">See how it works</a>
+  </div>
+  <div class="hero-proof">
+    <span class="avatars">
+      <span>👩🏾</span><span>👨🏿</span><span>👩🏽</span><span>👨🏾</span><span>👩🏿</span>
+    </span>
+    <b>2,400+ vendors</b> across Lagos, Abuja &amp; Port Harcourt trust us
+  </div>
+</section>
+
+<div class="trust-bar">
+  <div class="trust-item"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Bank-grade encryption</div>
+  <div class="trust-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>48hr dispute resolution</div>
+  <div class="trust-item"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>Paystack-powered payments</div>
+  <div class="trust-item"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.82 19.79 19.79 0 01.22 1.18 2 2 0 012.22 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.61-.61a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>WhatsApp &amp; SMS alerts</div>
+</div>
+
+<section class="section" id="how">
+  <div class="section-head">
+    <div class="tag">How it works</div>
+    <h2>Four steps. Zero stress.</h2>
+    <p>From posting on Instagram to getting paid — without anyone getting scammed.</p>
+  </div>
+  <div class="steps-row">
+    <div class="step-card">
+      <div class="step-icon">🔗</div>
+      <h3>Vendor Creates Link</h3>
+      <p>Fill in item name, amount and delivery deadline. Get a unique escrow link in seconds.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-icon">💳</div>
+      <h3>Buyer Pays Securely</h3>
+      <p>Buyer clicks the link and pays via card, bank transfer or USSD. Funds held safely in escrow — not with the vendor yet.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-icon">📦</div>
+      <h3>Item Delivered</h3>
+      <p>Vendor ships knowing payment is guaranteed. Buyer receives knowing they can raise a dispute if needed.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-icon">✅</div>
+      <h3>Funds Released</h3>
+      <p>Buyer confirms delivery and funds are released instantly. Or timer auto-releases after the agreed window. Everyone wins.</p>
+    </div>
+  </div>
+</section>
+
+<section class="split-section">
+  <div class="split-grid">
+    <div class="split-text">
+      <span class="tag">The trust problem</span>
+      <h2>Every Nigerian vendor knows this feeling.</h2>
+      <p>You've built a following. Your products are real. But buyers don't trust you because of the scammers who came before. And you don't trust buyers who order and ghost.</p>
+      <p>Escrow R Us sits in the middle. We hold the money, we verify delivery, and we protect both sides equally.</p>
+      <ul class="check-list">
+        <li><strong>No more "pay before" arguments</strong> — buyer pays into escrow, not to you directly</li>
+        <li><strong>No more ghosting buyers</strong> — payment is locked before you ship</li>
+        <li><strong>No more chargebacks</strong> — disputes handled fairly by our team within 48hrs</li>
+      </ul>
+    </div>
+    <div class="chat-wrap">
+      <div class="chat-top">
+        <div class="chat-avi">👗</div>
+        <div>
+          <div class="chat-name">Adaeze's Boutique</div>
+          <div class="chat-online">● Active now</div>
+        </div>
+      </div>
+      <div class="chat-body">
+        <div class="msg">
+          <div class="msg-avi">👩🏾</div>
+          <div class="bubble">Hi! I love the ankara dress. How much and do you deliver to Lekki?</div>
+        </div>
+        <div class="msg out">
+          <div class="msg-avi">👗</div>
+          <div class="bubble">Yes! ₦35,000 + ₦1,500 delivery. I'll send you a secure escrow link — pay through it and I ship once confirmed 🔒</div>
+        </div>
+        <div class="escrow-card">
+          <div class="ec-label">🔒 Escrow R Us — Secure Deal</div>
+          <div class="ec-title">Red Ankara Midi Dress</div>
+          <div class="ec-amount">₦36,500</div>
+          <a href="pay.html" class="ec-btn">Pay Securely →</a>
+        </div>
+        <div class="msg">
+          <div class="msg-avi">👩🏾</div>
+          <div class="bubble">✅ Done! I can see the funds are held. Please ship as soon as possible 🙏🏾</div>
+        </div>
+        <div class="msg out">
+          <div class="msg-avi">👗</div>
+          <div class="bubble">Shipped! Tracking number sent. Payment will be released when you confirm 📦</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="stats-section">
+  <div class="stats-grid">
+    <div class="stat-box">
+      <div class="stat-num g">₦4.2T</div>
+      <div class="stat-label">Lost to social commerce fraud in Nigeria annually</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num g">1.8%</div>
+      <div class="stat-label">Flat fee. No monthly charges, no hidden costs</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num g">48hrs</div>
+      <div class="stat-label">Maximum dispute resolution turnaround</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num g">2,400+</div>
+      <div class="stat-label">Active vendors secured since launch</div>
+    </div>
+  </div>
+</section>
+
+<section class="pricing-section" id="pricing">
+  <div class="section-head">
+    <div class="tag">Pricing</div>
+    <h2>Pay only when you close a deal.</h2>
+    <p>No signup fees. No monthly charges. You only pay when money moves.</p>
+  </div>
+  <div class="pricing-grid">
+    <div class="p-card">
+      <div class="p-tier">Casual Seller</div>
+      <div class="p-fee">1.8%</div>
+      <div class="p-note">per transaction · up to 10 deals/month</div>
+      <ul class="p-features">
+        <li>Secure escrow links</li>
+        <li>Paystack payments</li>
+        <li>48hr dispute resolution</li>
+        <li>Email notifications</li>
+      </ul>
+      <a href="create.html" class="p-btn p-btn-light">Start Free</a>
+    </div>
+    <div class="p-card hot">
+      <div class="p-hot-badge">Most Popular</div>
+      <div class="p-tier">Active Vendor</div>
+      <div class="p-fee">1.5%</div>
+      <div class="p-note">per transaction · ₦500k+/month</div>
+      <ul class="p-features">
+        <li>Unlimited deals</li>
+        <li>Branded escrow links</li>
+        <li>24hr dispute resolution</li>
+        <li>SMS + WhatsApp alerts</li>
+        <li>Vendor dashboard</li>
+      </ul>
+      <a href="create.html" class="p-btn p-btn-white">Get Started</a>
+    </div>
+    <div class="p-card">
+      <div class="p-tier">Business</div>
+      <div class="p-fee">1.2%</div>
+      <div class="p-note">per transaction · high volume</div>
+      <ul class="p-features">
+        <li>Everything in Active</li>
+        <li>API access</li>
+        <li>Dedicated account manager</li>
+        <li>Custom SLA &amp; reporting</li>
+      </ul>
+      <a href="mailto:hello@escrowrus.com" class="p-btn p-btn-light">Contact Sales</a>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <h2>Your next deal<br/>deserves protection.</h2>
+  <p>Stop losing buyers to distrust and stop worrying about getting paid. Create your first escrow link in under 2 minutes — free.</p>
+  <a href="create.html" class="btn btn-white">Create Your First Escrow Link →</a>
+</section>
+
+<footer>
+  <div class="f-logo">Escrow R Us</div>
+  <div>© 2026 Escrow R Us Ltd. All rights reserved.</div>
+  <div><a href="#">Terms</a> &nbsp;·&nbsp; <a href="#">Privacy</a> &nbsp;·&nbsp; <a href="#">Support</a></div>
+</footer>
+</body>
+</html>
